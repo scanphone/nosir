@@ -1,178 +1,290 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>مدرسة عمر</title>
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<style>
-body {
-    font-family: "Cairo", sans-serif;
-    background: linear-gradient(135deg, #396afc, #2948ff);
-    margin:0; padding:0; color:white; text-align:center;
-}
-.container {
-    margin:40px auto; background:white; color:#333; width:90%; max-width:500px;
-    padding:25px; border-radius:15px; box-shadow:0 4px 15px rgba(0,0,0,0.3);
-}
-input { width:90%; padding:12px; border-radius:8px; border:1px solid #aaa; margin-bottom:10px; font-size:16px; }
-button { padding:10px 20px; border-radius:8px; border:none; background:#396afc; color:white; font-size:16px; cursor:pointer; transition:.2s; }
-button:hover{ background:#2948ff; }
-#studentList div { background:#f4f6ff; padding:10px; margin:6px 0; border-radius:8px; border-right:5px solid #2948ff; font-weight:bold; }
-#adminPanel { display:none; opacity:0; transform:translateY(20px); transition:.4s; }
-#adminPanel.show{ display:block; opacity:1; transform:translateY(0); }
-.editBox { display:flex; gap:5px; margin-bottom:8px; }
-.editBox input{ flex:1; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سجل متابعة بطلات الاستدامة</title>
+    <style>
+        :root {
+            --primary-color: #006b3f; /* لون أخضر السعودية */
+            --secondary-color: #00a651;
+            --accent-color: #f39c12; /* لون ذهبي */
+            --text-color: #333;
+            --bg-color: #f9f9f9;
+            --border-color: #ddd;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            text-align: center;
+            margin-top: 5px;
+            font-weight: normal;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        #add-student {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        #add-student:hover {
+            background-color: var(--secondary-color);
+        }
+
+        #clear-all {
+            background-color: #e74c3c; /* لون أحمر */
+            color: #fff;
+        }
+
+        #clear-all:hover {
+            background-color: #c0392b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .total-cell {
+            font-weight: bold;
+            color: var(--accent-color);
+            background-color: #fff3cd;
+        }
+
+        .delete-row {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 0;
+        }
+
+        .delete-row:hover {
+            color: #c0392b;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 10px; }
+            table, th, td { font-size: 0.9em; padding: 8px; }
+            .controls { flex-direction: column; }
+            button { width: 100%; margin-bottom: 10px; }
+        }
+    </style>
 </head>
 <body>
 
-<h1 id="secretTitle">📘 مدرسة عمر</h1>
+    <h1>سجل متابعة بطلات الاستدامة</h1>
+    <h2>حب الوطن بلغة العلوم - رؤية السعودية 2030</h2>
 
-<div class="container">
-<h2>📝 تسجيل اسم الطالب</h2>
-<input id="studentName" type="text" placeholder="اكتب اسمك هنا">
-<button onclick="addStudent()">إضافة الاسم</button>
-<h3>عدد الطلاب المسجلين: <span id="count">0</span></h3>
-<h3>📋 قائمة الأسماء</h3>
-<div id="studentList"></div>
+    <div class="container">
+        <div class="controls">
+            <button id="add-student">+ إضافة طالبة</button>
+            <button id="clear-all">مسح الكل</button>
+        </div>
 
-<div id="adminPanel">
-<hr>
-<h2>⚙️ لوحة التحكم</h2>
-<button onclick="exportExcel()">📤 تصدير الأسماء إلى Excel (XLSX)</button>
-<h3>تحكم بالأسماء:</h3>
-<div id="adminList"></div>
-<hr>
-<h3>🔑 تغيير كلمة المرور</h3>
-<input id="newPass" type="text" placeholder="كلمة المرور الجديدة">
-<button onclick="changePassword()">حفظ كلمة المرور</button>
-</div>
-</div>
+        <table id="followup-table">
+            <thead>
+                <tr>
+                    <th>حذف</th>
+                    <th style="width: 25%;">اسم الطالبة</th>
+                    <th title="من 5 درجات">الركن العلمي</th>
+                    <th title="من 5 درجات">تصميم المطويات</th>
+                    <th title="من 5 درجات">كتابة العبارات</th>
+                    <th title="من 15 درجة">إجمالي الدرجات</th>
+                    <th style="width: 25%;">ملاحظات المعلمة</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <!-- سيتم إضافة الصفوف هنا بواسطة الجافا سكريبت -->
+            </tbody>
+        </table>
+    </div>
 
-<script>
-// ================= Supabase Setup =================
-const SUPABASE_URL = "https://ozwjimsaiqtawaergzkn.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im96d2ppbXNhaXF0YXdhZXJnemtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MjU3MDIsImV4cCI6MjA3OTIwMTcwMn0.auth4TLnHTzOygdMMayIsLAFOy8h9t0ixsOcV9i8Alg";
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <script>
+        const tableBody = document.getElementById('table-body');
+        const addStudentBtn = document.getElementById('add-student');
+        const clearAllBtn = document.getElementById('clear-all');
 
-// ================= الوظائف =================
+        // تحميل البيانات عند فتح الصفحة
+        document.addEventListener('DOMContentLoaded', loadTableData);
 
-// عرض الطلاب وعدادهم
-async function displayStudents(){
-  const { data, error } = await supabase.from('students').select('*').order('created_at',{ascending:true});
-  if(error) return console.error(error);
+        // إضافة صف جديد
+        addStudentBtn.addEventListener('click', addStudentRow);
 
-  let list = document.getElementById("studentList");
-  list.innerHTML = "";
-  data.forEach(s=>{
-    list.innerHTML += `<div>${s.name}<br><small>${s.created_at}</small></div>`;
-  });
-  document.getElementById("count").textContent = data.length;
-}
+        // مسح الكل
+        clearAllBtn.addEventListener('click', () => {
+            if (confirm('هل أنت متأكد من مسح جميع البيانات؟')) {
+                localStorage.removeItem('sustainabilityTable');
+                tableBody.innerHTML = '';
+            }
+        });
 
-// إضافة طالب
-async function addStudent(){
-  let name = document.getElementById("studentName").value.trim();
-  if(!name) return alert("اكتب الاسم");
+        // --- الوظائف (Functions) ---
 
-  const { error } = await supabase.from('students').insert([{name}]);
-  if(error) return alert("خطأ في الإضافة: "+error.message);
-  document.getElementById("studentName").value="";
-  displayStudents();
-}
+        // إنشاء صف جديد
+        function addStudentRow(savedData = null) {
+            const row = document.createElement('tr');
 
-// ================= لوحة الأدمن =================
+            row.innerHTML = `
+                <td><button class="delete-row" title="حذف الطالبة">×</button></td>
+                <td contenteditable="true" class="editable-name">${savedData ? savedData.name : 'اسم الطالبة'}</td>
+                <td><input type="number" min="0" max="5" value="${savedData ? savedData.act1 : 0}" class="score-input"></td>
+                <td><input type="number" min="0" max="5" value="${savedData ? savedData.act2 : 0}" class="score-input"></td>
+                <td><input type="number" min="0" max="5" value="${savedData ? savedData.act3 : 0}" class="score-input"></td>
+                <td class="total-cell">${savedData ? savedData.total : 0}</td>
+                <td contenteditable="true" class="editable-note">${savedData ? savedData.note : ''}</td>
+            `;
 
-// عرض لوحة الأدمن
-async function displayAdminList(){
-  const { data, error } = await supabase.from('students').select('*').order('created_at',{ascending:true});
-  if(error) return console.error(error);
+            tableBody.appendChild(row);
+            attachRowListeners(row);
+            saveTableData(); // حفظ البيانات بعد إضافة صف
+        }
 
-  let list = document.getElementById("adminList");
-  list.innerHTML="";
-  data.forEach(s=>{
-    list.innerHTML += `<div class="editBox">
-      <input id="edit_${s.id}" value="${s.name}">
-      <button onclick="editStudent('${s.id}')">تعديل</button>
-      <button onclick="deleteStudent('${s.id}')" style="background:red">حذف</button>
-    </div>`;
-  });
-}
+        // ربط الأحداث (Listeners) بالصف
+        function attachRowListeners(row) {
+            const scoreInputs = row.querySelectorAll('.score-input');
+            const deleteBtn = row.querySelector('.delete-row');
+            const editableCells = row.querySelectorAll('.editable-name, .editable-note');
 
-// تعديل اسم طالب
-async function editStudent(id){
-  let newName = document.getElementById("edit_"+id).value.trim();
-  if(!newName) return alert("الاسم فارغ");
-  const { error } = await supabase.from('students').update({name:newName}).eq('id',id);
-  if(error) return alert(error.message);
-  displayStudents();
-  displayAdminList();
-}
+            // حساب المجموع عند تغيير أي درجة
+            scoreInputs.forEach(input => {
+                input.addEventListener('input', () => calculateTotal(row));
+            });
 
-// حذف طالب
-async function deleteStudent(id){
-  if(!confirm("هل تريد حذف هذا الاسم؟")) return;
-  const { error } = await supabase.from('students').delete().eq('id',id);
-  if(error) return alert(error.message);
-  displayStudents();
-  displayAdminList();
-}
+            // حذف الصف
+            deleteBtn.addEventListener('click', () => {
+                if (confirm('هل أنت متأكد من حذف هذه الطالبة؟')) {
+                    row.remove();
+                    saveTableData();
+                }
+            });
 
-// تصدير Excel
-async function exportExcel(){
-  const { data, error } = await supabase.from('students').select('*').order('created_at',{ascending:true});
-  if(error) return alert(error.message);
-  let excelData = data.map((s,i)=>({ "الرقم": i+1, "الاسم": s.name, "وقت التسجيل": s.created_at }));
-  let ws = XLSX.utils.json_to_sheet(excelData);
-  let wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "الطلاب");
-  XLSX.writeFile(wb,"اسماء_مدرسة_عمر.xlsx");
-}
+            // حفظ عند التعديل النصي (اسم، ملاحظة)
+            editableCells.forEach(cell => {
+                cell.addEventListener('input', saveTableData);
+            });
+        }
 
-// تغيير كلمة المرور الأدمن
-async function changePassword(){
-  let newP = document.getElementById("newPass").value.trim();
-  if(!newP) return alert("اكتب كلمة المرور الجديدة");
+        // حساب إجمالي درجات الصف
+        function calculateTotal(row) {
+            const scoreInputs = row.querySelectorAll('.score-input');
+            let total = 0;
+            scoreInputs.forEach(input => {
+                const score = parseInt(input.value);
+                if (!isNaN(score) && score >= 0) {
+                    total += Math.min(score, 5); // التأكد من عدم تجاوز 5
+                }
+            });
+            row.querySelector('.total-cell').textContent = total;
+            saveTableData();
+        }
 
-  const { data, error } = await supabase.from('admin').select('*').limit(1);
-  if(error) return alert(error.message);
+        // حفظ البيانات إلى LocalStorage
+        function saveTableData() {
+            const rows = tableBody.querySelectorAll('tr');
+            const tableData = [];
 
-  const id = data[0].id;
-  const { error: updateErr } = await supabase.from('admin').update({password:newP}).eq('id',id);
-  if(updateErr) return alert(updateErr.message);
+            rows.forEach(row => {
+                tableData.push({
+                    name: row.querySelector('.editable-name').textContent,
+                    act1: row.querySelector('td:nth-child(3) input').value,
+                    act2: row.querySelector('td:nth-child(4) input').value,
+                    act3: row.querySelector('td:nth-child(5) input').value,
+                    total: row.querySelector('.total-cell').textContent,
+                    note: row.querySelector('.editable-note').textContent
+                });
+            });
 
-  alert("✅ تم تغيير كلمة المرور بنجاح");
-  document.getElementById("newPass").value="";
-}
+            localStorage.setItem('sustainabilityTable', JSON.stringify(tableData));
+        }
 
-// تسجيل دخول الأدمن
-async function adminLogin(){
-  let pass = prompt("🔐 أدخل كلمة المرور:");
-  const { data, error } = await supabase.from('admin').select('*').limit(1);
-  if(error) return alert(error.message);
-
-  if(data[0].password === pass){
-    document.getElementById("adminPanel").classList.add("show");
-    displayAdminList();
-  }else{
-    alert("❌ كلمة المرور خاطئة!");
-  }
-}
-
-// ================= طريقة سرية للدخول =================
-let clicks=0;
-document.getElementById("secretTitle").onclick=function(){
-  clicks++;
-  if(clicks>=5){
-    adminLogin();
-    clicks=0;
-  }
-}
-
-// ================= تشغيل أولي =================
-displayStudents();
-
-</script>
+        // تحميل البيانات من LocalStorage
+        function loadTableData() {
+            const savedTableData = localStorage.getItem('sustainabilityTable');
+            if (savedTableData) {
+                const tableData = JSON.parse(savedTableData);
+                tableData.forEach(data => {
+                    addStudentRow(data);
+                });
+            }
+        }
+    </script>
 </body>
 </html>
+
