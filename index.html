@@ -2,11 +2,10 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سجل متابعة بطلات الاستدامة</title>
+    <title>استبيان مبادرة: حب الوطن بلغة العلوم</title>
     <style>
         :root {
-            --primary-color: #006b3f; /* لون أخضر السعودية */
+            --primary-color: #006b3f; /* أخضر السعودية */
             --secondary-color: #00a651;
             --accent-color: #f39c12; /* لون ذهبي */
             --text-color: #333;
@@ -25,266 +24,172 @@
             align-items: center;
         }
 
-        h1 {
-            color: var(--primary-color);
+        .header {
             text-align: center;
-            margin-bottom: 10px;
-        }
-
-        h2 {
-            color: var(--secondary-color);
-            text-align: center;
-            margin-top: 5px;
-            font-weight: normal;
-        }
-
-        .container {
+            margin-bottom: 30px;
+            border-bottom: 4px solid var(--primary-color);
+            padding-bottom: 10px;
             width: 100%;
-            max-width: 1000px;
+            max-width: 800px;
+        }
+
+        h1 { color: var(--primary-color); margin: 0; }
+        h2 { color: var(--secondary-color); font-weight: normal; margin: 5px 0; }
+        h3 { color: var(--text-color); margin-top: 10px; }
+
+        .survey-container {
+            width: 100%;
+            max-width: 800px;
             background-color: #fff;
-            padding: 20px;
+            padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            margin-top: 20px;
         }
 
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-
-        #add-student {
-            background-color: var(--primary-color);
-            color: #fff;
-        }
-
-        #add-student:hover {
-            background-color: var(--secondary-color);
-        }
-
-        #clear-all {
-            background-color: #e74c3c; /* لون أحمر */
-            color: #fff;
-        }
-
-        #clear-all:hover {
-            background-color: #c0392b;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        th, td {
+        .question-group {
+            margin-bottom: 25px;
+            padding: 15px;
             border: 1px solid var(--border-color);
-            padding: 12px;
-            text-align: center;
+            border-radius: 5px;
+            background-color: #fff;
         }
 
-        th {
-            background-color: var(--primary-color);
-            color: #fff;
+        .question-group:hover {
+            border-color: var(--secondary-color);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
             font-weight: bold;
+            font-size: 1.1em;
         }
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
+        .radio-label {
+            display: inline-block;
+            margin-left: 20px;
+            font-weight: normal;
+            cursor: pointer;
         }
 
-        input[type="text"], input[type="number"] {
+        input[type="radio"] {
+            margin-left: 10px;
+            transform: scale(1.2);
+        }
+
+        textarea {
             width: 100%;
-            padding: 8px;
+            height: 80px;
+            padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 4px;
             box-sizing: border-box;
-            text-align: center;
+            resize: none;
         }
 
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .total-cell {
-            font-weight: bold;
-            color: var(--accent-color);
-            background-color: #fff3cd;
-        }
-
-        .delete-row {
-            background: none;
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: #fff;
             border: none;
-            color: #e74c3c;
-            cursor: pointer;
+            border-radius: 4px;
             font-size: 1.2em;
-            padding: 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
 
-        .delete-row:hover {
-            color: #c0392b;
+        .submit-btn:hover {
+            background-color: var(--secondary-color);
         }
 
-        @media (max-width: 768px) {
-            body { padding: 10px; }
-            .container { padding: 10px; }
-            table, th, td { font-size: 0.9em; padding: 8px; }
-            .controls { flex-direction: column; }
-            button { width: 100%; margin-bottom: 10px; }
+        .vision-logo {
+            max-width: 150px;
+            margin-top: 10px;
+        }
+        
+        .q-desc {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .survey-container { padding: 15px; }
+            .radio-label { display: block; margin-bottom: 5px; }
         }
     </style>
 </head>
 <body>
 
-    <h1>سجل متابعة بطلات الاستدامة</h1>
-    <h2>حب الوطن بلغة العلوم - رؤية السعودية 2030</h2>
-
-    <div class="container">
-        <div class="controls">
-            <button id="add-student">+ إضافة طالبة</button>
-            <button id="clear-all">مسح الكل</button>
-        </div>
-
-        <table id="followup-table">
-            <thead>
-                <tr>
-                    <th>حذف</th>
-                    <th style="width: 25%;">اسم الطالبة</th>
-                    <th title="من 5 درجات">الركن العلمي</th>
-                    <th title="من 5 درجات">تصميم المطويات</th>
-                    <th title="من 5 درجات">كتابة العبارات</th>
-                    <th title="من 15 درجة">إجمالي الدرجات</th>
-                    <th style="width: 25%;">ملاحظات المعلمة</th>
-                </tr>
-            </thead>
-            <tbody id="table-body">
-                <!-- سيتم إضافة الصفوف هنا بواسطة الجافا سكريبت -->
-            </tbody>
-        </table>
+    <div class="header">
+        <h1>استبيان قياس أثر مبادرة: حب الوطن بلغة العلوم</h1>
+        <h2>رؤية السعودية 2030 - جيل واعٍ ومستدام</h2>
+        <img src="https://www.vision2030.gov.sa/media/uy3la35n/vision_2030_ar.svg" alt="شعار رؤية السعودية 2030" class="vision-logo">
     </div>
 
-    <script>
-        const tableBody = document.getElementById('table-body');
-        const addStudentBtn = document.getElementById('add-student');
-        const clearAllBtn = document.getElementById('clear-all');
+    <div class="survey-container">
 
-        // تحميل البيانات عند فتح الصفحة
-        document.addEventListener('DOMContentLoaded', loadTableData);
+        <div class="question-group">
+            <label>الاسم الثلاثي (اختياري):</label>
+            <input type="text" placeholder="أدخلي اسمك هنا...">
+        </div>
 
-        // إضافة صف جديد
-        addStudentBtn.addEventListener('click', addStudentRow);
+        <div class="question-group">
+            <label>المرحلة الدراسية:</label>
+            <label class="radio-label"><input type="radio" name="stage" value="primary"> الابتدائية</label>
+        </div>
 
-        // مسح الكل
-        clearAllBtn.addEventListener('click', () => {
-            if (confirm('هل أنت متأكد من مسح جميع البيانات؟')) {
-                localStorage.removeItem('sustainabilityTable');
-                tableBody.innerHTML = '';
-            }
-        });
+        <h3>أولاً: تقييم محاور المبادرة</h3>
 
-        // --- الوظائف (Functions) ---
+        <div class="question-group">
+            <label>1. هل فهمتِ كيف يخدم العلم وطننا السعودية في مجال ترشيد استهلاك المياه والطاقة؟</label>
+            <span class="q-desc">من خلال ما تعلمته في الركن العلمي والمطويات</span>
+            <label class="radio-label"><input type="radio" name="q1" value="yes"> نعم، بوضوح</label>
+            <label class="radio-label"><input type="radio" name="q1" value="partially"> إلى حد ما</label>
+            <label class="radio-label"><input type="radio" name="q1" value="no"> لا</label>
+        </div>
 
-        // إنشاء صف جديد
-        function addStudentRow(savedData = null) {
-            const row = document.createElement('tr');
+        <div class="question-group">
+            <label>2. هل قمتِ بتطبيق سلوكيات ترشيد الماء أو الكهرباء في المدرسة بعد المشاركة في المبادرة؟</label>
+            <span class="q-desc">مثال: إغلاق الصنبور، إطفاء النور عند الخروج</span>
+            <label class="radio-label"><input type="radio" name="q2" value="always"> نعم، دائماً</label>
+            <label class="radio-label"><input type="radio" name="q2" value="sometimes"> أحياناً</label>
+            <label class="radio-label"><input type="radio" name="q2" value="never"> لم أطبقها</label>
+        </div>
 
-            row.innerHTML = `
-                <td><button class="delete-row" title="حذف الطالبة">×</button></td>
-                <td contenteditable="true" class="editable-name">${savedData ? savedData.name : 'اسم الطالبة'}</td>
-                <td><input type="number" min="0" max="5" value="${savedData ? savedData.act1 : 0}" class="score-input"></td>
-                <td><input type="number" min="0" max="5" value="${savedData ? savedData.act2 : 0}" class="score-input"></td>
-                <td><input type="number" min="0" max="5" value="${savedData ? savedData.act3 : 0}" class="score-input"></td>
-                <td class="total-cell">${savedData ? savedData.total : 0}</td>
-                <td contenteditable="true" class="editable-note">${savedData ? savedData.note : ''}</td>
-            `;
+        <div class="question-group">
+            <label>3. هل أصبح لديكِ وعي بأهمية إعادة التدوير لحماية بيئة ومقدرات الوطن؟</label>
+            <label class="radio-label"><input type="radio" name="q3" value="yes"> نعم، بشكل كبير</label>
+            <label class="radio-label"><input type="radio" name="q3" value="partially"> نعم، قليل</label>
+            <label class="radio-label"><input type="radio" name="q3" value="no"> لا</label>
+        </div>
 
-            tableBody.appendChild(row);
-            attachRowListeners(row);
-            saveTableData(); // حفظ البيانات بعد إضافة صف
-        }
+        <h3>ثانياً: الاعتزاز الوطني والعلوم</h3>
 
-        // ربط الأحداث (Listeners) بالصف
-        function attachRowListeners(row) {
-            const scoreInputs = row.querySelectorAll('.score-input');
-            const deleteBtn = row.querySelector('.delete-row');
-            const editableCells = row.querySelectorAll('.editable-name, .editable-note');
+        <div class="question-group">
+            <label>4. هل شعرتِ بالفخر عند المشاركة في فقرة "كتابة العبارات الوطنية" التي تربط العلم بحب الوطن؟</label>
+            <label class="radio-label"><input type="radio" name="q4" value="yes"> نعم، جداً</label>
+            <label class="radio-label"><input type="radio" name="q4" value="no"> لا</label>
+        </div>
 
-            // حساب المجموع عند تغيير أي درجة
-            scoreInputs.forEach(input => {
-                input.addEventListener('input', () => calculateTotal(row));
-            });
+        <div class="question-group">
+            <label>5. هل تتمنين أن تصبحي عالمة أو مهندسة سعودية تساهم في تطوير وخدمة الوطن مستقبلاً؟</label>
+            <label class="radio-label"><input type="radio" name="q5" value="yes"> نعم، أتمنى</label>
+            <label class="radio-label"><input type="radio" name="q5" value="maybe"> ممكن</label>
+            <label class="radio-label"><input type="radio" name="q5" value="no"> لا</label>
+        </div>
 
-            // حذف الصف
-            deleteBtn.addEventListener('click', () => {
-                if (confirm('هل أنت متأكد من حذف هذه الطالبة؟')) {
-                    row.remove();
-                    saveTableData();
-                }
-            });
+        <div class="question-group">
+            <label>كلمة أخيرة أو اقتراح منكِ لتطوير المبادرة:</label>
+            <textarea placeholder="اكتبي رأيك هنا..."></textarea>
+        </div>
 
-            // حفظ عند التعديل النصي (اسم، ملاحظة)
-            editableCells.forEach(cell => {
-                cell.addEventListener('input', saveTableData);
-            });
-        }
+        <button class="submit-btn">إرسال الاستبيان</button>
 
-        // حساب إجمالي درجات الصف
-        function calculateTotal(row) {
-            const scoreInputs = row.querySelectorAll('.score-input');
-            let total = 0;
-            scoreInputs.forEach(input => {
-                const score = parseInt(input.value);
-                if (!isNaN(score) && score >= 0) {
-                    total += Math.min(score, 5); // التأكد من عدم تجاوز 5
-                }
-            });
-            row.querySelector('.total-cell').textContent = total;
-            saveTableData();
-        }
+    </div>
 
-        // حفظ البيانات إلى LocalStorage
-        function saveTableData() {
-            const rows = tableBody.querySelectorAll('tr');
-            const tableData = [];
-
-            rows.forEach(row => {
-                tableData.push({
-                    name: row.querySelector('.editable-name').textContent,
-                    act1: row.querySelector('td:nth-child(3) input').value,
-                    act2: row.querySelector('td:nth-child(4) input').value,
-                    act3: row.querySelector('td:nth-child(5) input').value,
-                    total: row.querySelector('.total-cell').textContent,
-                    note: row.querySelector('.editable-note').textContent
-                });
-            });
-
-            localStorage.setItem('sustainabilityTable', JSON.stringify(tableData));
-        }
-
-        // تحميل البيانات من LocalStorage
-        function loadTableData() {
-            const savedTableData = localStorage.getItem('sustainabilityTable');
-            if (savedTableData) {
-                const tableData = JSON.parse(savedTableData);
-                tableData.forEach(data => {
-                    addStudentRow(data);
-                });
-            }
-        }
-    </script>
 </body>
 </html>
-
